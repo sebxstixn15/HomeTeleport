@@ -1,0 +1,30 @@
+name: HomeTeleporter
+version: '1.0-SNAPSHOT'
+main: at.sebdev.homeTeleporter.HomeTeleporter
+api-version: '1.21'
+
+commands:
+  setHome:
+    description: Sets your Home or other position
+    usage: /setHome [name]
+    aliases: [ sh ]
+  home:
+    description: Teleports you to your Home or other position
+    usage: /home [name]
+    aliases: [ h ]
+    tab-completer: at.sebdev.homeTeleporter.command.HomeCommand
+  renameHome:
+    description: Rename a Home
+    usage: /renameHome [old_name] [new_name]
+    aliases: [ rh ]
+    tab-completer: at.sebdev.homeTeleporter.command.RenameHomeCommand
+  deleteHome:
+    description: Delete a Home
+    usage: /deleteHome [old_name] [new_name]
+    aliases: [ dh ]
+    tab-completer: at.sebdev.homeTeleporter.command.DeleteHomeCommand
+  admin:
+    description: Admin Command
+    usage: /admin setTimer [int]
+    aliases: [ a ]
+    tab-completer: at.sebdev.homeTeleporter.command.AdminCommand
