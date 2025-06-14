@@ -14,6 +14,7 @@ import java.util.*;
 public class PlayerManager {
     private static PlayerManager instance;
 
+    //Instances
     public static synchronized PlayerManager getInstance() {
         if (instance == null) {
             instance = new PlayerManager();
@@ -22,6 +23,7 @@ public class PlayerManager {
     }
 
 
+    //save home to player with location and name
     public boolean save(Player player, Location location, String name) throws IOException {
         File file = new File("plugins/HomeTeleporter/players/" + player.getUniqueId() + ".yml");
         boolean created = file.createNewFile();
@@ -47,11 +49,10 @@ public class PlayerManager {
         nameCoordinateList.add(new NameCoordinate(name, location.getBlockX(), location.getBlockY(), location.getBlockZ()));
 
         saveHomes(player.getUniqueId(), nameCoordinateList);
-
-        player.sendMessage(ChatColor.GREEN + "successfully inserted Location with name: " + name);
         return true;
     }
 
+    //teleports user to a home
     public boolean teleport(Player player, String name) throws IOException {
         File file = new File("plugins/HomeTeleporter/players/" + player.getUniqueId() + ".yml");
         boolean created = file.createNewFile();
@@ -67,15 +68,15 @@ public class PlayerManager {
         for (NameCoordinate nameCoordinate : nameCoordinateList) {
             if (nameCoordinate.getName().equals(name)) {
                 player.teleport(new Location(player.getWorld(), nameCoordinate.getX(), nameCoordinate.getY(), nameCoordinate.getZ()));
-                player.sendMessage(ChatColor.GREEN + "successfully teleported to: " + name);
                 return true;
             }
         }
 
         player.sendMessage(ChatColor.RED + "Could not found any homes with name: " + name);
-        return true;
+        return false;
     }
 
+    //removes a home with the name of it
     public boolean remove(Player player, String name) throws IOException {
         File file = new File("plugins/HomeTeleporter/players/" + player.getUniqueId() + ".yml");
         boolean created = file.createNewFile();
@@ -93,15 +94,15 @@ public class PlayerManager {
             if (nameCoordinate.getName().equals(name)) {
                 nameCoordinateList.remove(i);
                 saveHomes(player.getUniqueId(), nameCoordinateList);
-                player.sendMessage(ChatColor.GREEN + "successfully removed: " + name);
                 return true;
             }
         }
 
         player.sendMessage(ChatColor.RED + "Could not found any homes with name: " + name);
-        return true;
+        return false;
     }
 
+    //renames a home with the name of the old name and with the new name
     public boolean rename(Player player, String old_name, String new_name) throws IOException {
         File file = new File("plugins/HomeTeleporter/players/" + player.getUniqueId() + ".yml");
         boolean created = file.createNewFile();
@@ -117,7 +118,7 @@ public class PlayerManager {
 
         if (getAllHomeNames(player.getUniqueId()).contains(new_name)) {
             player.sendMessage(ChatColor.RED + "cannot rename " + old_name + " to " + new_name + " because it already exists");
-            return true;
+            return false;
         }
 
         for (int i = 0; nameCoordinateList.size() > i; i++) {
@@ -125,17 +126,17 @@ public class PlayerManager {
             if (nameCoordinate.getName().equals(old_name)) {
                 nameCoordinateList.add(new NameCoordinate(new_name, nameCoordinate.getX(), nameCoordinate.getY(), nameCoordinate.getZ()));
                 nameCoordinateList.remove(i);
-                player.sendMessage(ChatColor.GREEN + "successfully renamed: " + old_name + " to " + new_name);
                 saveHomes(player.getUniqueId(), nameCoordinateList);
                 return true;
             }
         }
 
         player.sendMessage(ChatColor.RED + "Could not found any homes with name: " + old_name);
-        return true;
+        return false;
     }
 
 
+    //save the homes in the .yml
     private void saveHomes(UUID uuid, List<NameCoordinate> homes) {
         File file = new File("plugins/HomeTeleporter/players/" + uuid + ".yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -160,7 +161,8 @@ public class PlayerManager {
     }
 
 
-    private List<NameCoordinate> loadHomes(UUID uuid) {
+    //get all Homes in a List
+    public List<NameCoordinate> loadHomes(UUID uuid) {
         File file = new File("plugins/HomeTeleporter/players/" + uuid + ".yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         List<NameCoordinate> homes = new ArrayList<>();
@@ -178,20 +180,10 @@ public class PlayerManager {
         return homes;
     }
 
+    //get all home names
     public List<String> getAllHomeNames(UUID uuid) {
-        File file = new File("plugins/HomeTeleporter/players/" + uuid + ".yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        List<NameCoordinate> homes = new ArrayList<>();
+        List<NameCoordinate> homes = loadHomes(uuid);
 
-        List<Map<?, ?>> homeList = config.getMapList("homes");
-        for (Map<?, ?> map : homeList) {
-            String name = (String) map.get("name");
-            int x = ((Number) map.get("x")).intValue();
-            int y = ((Number) map.get("y")).intValue();
-            int z = ((Number) map.get("z")).intValue();
-
-            homes.add(new NameCoordinate(name, x, y, z));
-        }
         List<String> names = new ArrayList<>();
         for (NameCoordinate home : homes) {
             names.add(home.getName());

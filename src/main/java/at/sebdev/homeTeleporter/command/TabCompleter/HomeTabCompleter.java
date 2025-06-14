@@ -15,6 +15,7 @@ public class HomeTabCompleter implements TabCompleter {
         Player player = (Player) sender;
 
         if (command.getName().equalsIgnoreCase("home")) {
+            //tabcompleter for home and homes already exists
             try {
                 if (args.length == 1) {
                     List<String> homes = PlayerManager.getInstance().getAllHomeNames(player.getUniqueId());
@@ -28,6 +29,7 @@ public class HomeTabCompleter implements TabCompleter {
             }
 
         } else if (command.getName().equalsIgnoreCase("renameHome")) {
+            //tabcompleter for old_name homes
             try {
                 if (args.length == 1) {
                     List<String> homes = PlayerManager.getInstance().getAllHomeNames(player.getUniqueId());
@@ -40,6 +42,7 @@ public class HomeTabCompleter implements TabCompleter {
                 return new ArrayList<>();
             }
         } else if (command.getName().equalsIgnoreCase("deleteHome")) {
+            //tabcompleter for homes to delete
             try {
                 if (args.length == 1) {
                     List<String> homes = PlayerManager.getInstance().getAllHomeNames(player.getUniqueId());

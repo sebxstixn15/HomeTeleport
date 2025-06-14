@@ -1,5 +1,7 @@
 package at.sebdev.homeTeleporter.model;
 
+//model to get the name and the three axis
+
 public class NameCoordinate {
     private String name;
     private int x;

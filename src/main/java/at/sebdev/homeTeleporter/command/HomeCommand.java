@@ -1,6 +1,7 @@
 package at.sebdev.homeTeleporter.command;
 
 import at.sebdev.homeTeleporter.playerManager.PlayerManager;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,9 +26,11 @@ public class HomeCommand implements CommandExecutor {
 
         try {
             if (file.createNewFile()) {
+                //default timer when no one is set
                 yamlConfiguration.set("timer", 5);
                 yamlConfiguration.save(file);
             } else {
+                //get timer from config
                 cooldownSeconds = yamlConfiguration.getInt("timer");
             }
         } catch (IOException e) {
@@ -35,12 +38,14 @@ public class HomeCommand implements CommandExecutor {
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("This Command can only be used by Players.");
+            sender.sendMessage(ChatColor.RED + "This Command can only be used by Players.");
             return true;
         }
 
         UUID uuid = player.getUniqueId();
         long now = System.currentTimeMillis();
+
+        //check if timer is active
 
         if (cooldowns.containsKey(uuid)) {
             long lastUsed = cooldowns.get(uuid);
@@ -48,15 +53,19 @@ public class HomeCommand implements CommandExecutor {
 
             if (timePassed < cooldownSeconds) {
                 long timeLeft = cooldownSeconds - timePassed;
-                player.sendMessage("§cPlease wait " + timeLeft + " Seconds, before using this command again.");
+                player.sendMessage(ChatColor.YELLOW + "Please wait " + timeLeft + " more Seconds, before using this command again.");
                 return true;
             }
         }
 
 
         if (args.length == 0) {
+            //if no arguments are given with use standard home
             try {
-                PlayerManager.getInstance().teleport(player, "home");
+                boolean teleported = PlayerManager.getInstance().teleport(player, "home");
+                if (teleported) {
+                    player.sendMessage(ChatColor.GREEN + "Successfully teleported to Home");
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -65,8 +74,12 @@ public class HomeCommand implements CommandExecutor {
         }
 
         if (args.length == 1) {
+            //teleport to home with name
             try {
-                PlayerManager.getInstance().teleport(player, args[0]);
+                boolean teleported = PlayerManager.getInstance().teleport(player, args[0]);
+                if (teleported) {
+                    player.sendMessage(ChatColor.GREEN + "Successfully teleported to " + args[0]);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -11,12 +11,15 @@ public final class HomeTeleporter extends JavaPlugin {
     public void onEnable() {
         System.out.println("Started HomeTeleporter");
 
+        //set Commands to use
         getCommand("setHome").setExecutor(new SetHomeCommand());
         getCommand("home").setExecutor(new HomeCommand());
         getCommand("renameHome").setExecutor(new RenameHomeCommand());
-        getCommand("DeleteHome").setExecutor(new DeleteHomeCommand());
+        getCommand("deleteHome").setExecutor(new DeleteHomeCommand());
         getCommand("admin").setExecutor(new AdminCommand());
+        getCommand("listHomes").setExecutor(new ListHomeCommand());
 
+        //set Tab Completer
         getCommand("home").setTabCompleter(new HomeTabCompleter());
         getCommand("renameHome").setTabCompleter(new HomeTabCompleter());
         getCommand("DeleteHome").setTabCompleter(new HomeTabCompleter());

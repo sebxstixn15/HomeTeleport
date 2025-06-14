@@ -18,13 +18,22 @@ public class AdminCommand implements CommandExecutor {
             sender.sendMessage("This Command can only be used by Players.");
             return true;
         }
+        //check if player is an admin or owner or just have operation rights
+
         if (player.isOp()) {
             if (args.length == 2 && args[0].equalsIgnoreCase("setTimer")) {
                 File file = new File("plugins/HomeTeleporter/config.yml");
 
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-                config.set("timer", parseInt(args[1]));
+                //edit timer from commands and parse it into config.yml
+
+                try {
+                    config.set("timer", parseInt(args[1]));
+                } catch (NumberFormatException e) {
+                    player.sendMessage(ChatColor.RED + "Could not parse timer.");
+                    return true;
+                }
                 player.sendMessage(ChatColor.GREEN + "Successfully changed timer countdown to: " + parseInt(args[1]));
 
                 try {
@@ -35,8 +44,8 @@ public class AdminCommand implements CommandExecutor {
                 }
             }
         } else {
-            player.sendMessage(ChatColor.RED + "You are not an operator");
-            player.setOp(true);
+            player.sendMessage(ChatColor.RED + "You are not an operator, so you can't use that command!");
+            return true;
         }
         player.sendMessage("§cUnknown Command. Use /admin setTimer [int].");
         return true;
